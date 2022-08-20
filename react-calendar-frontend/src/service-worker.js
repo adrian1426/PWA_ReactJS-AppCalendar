@@ -82,5 +82,24 @@ self.addEventListener('install', async (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  console.log(event.request.url);
+  if (event.request.url !== 'http://localhost:4000/api/auth/renew') return;
+
+  console.log('SE PROCEDE A MANEJAR EL REQUEST DEL RENEW');
+
+  const res = fetch(event.request)
+    .then(response => {
+      //?Guardar en caché la respuesta
+      caches.open('cache-api')
+        .then(resCache => {
+          resCache.put(event.request, response);
+        });
+
+      return response.clone();
+    })
+    .catch(err => {
+      console.log('Ofline response');
+      return caches.match(event.request);
+    });
+
+  event.respondWith(res);
 });
