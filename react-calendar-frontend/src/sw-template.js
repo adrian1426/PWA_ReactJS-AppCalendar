@@ -8,13 +8,15 @@ const { registerRoute } = workbox.routing;
 const { CacheFirst, NetworkFirst, NetworkOnly } = workbox.strategies;
 const { BackgroundSyncPlugin } = workbox.backgroundSync;
 
-registerRoute(
-  new RegExp('http://localhost:4000/api/auth/renew'),
-  new NetworkFirst()
-);
+const pathsNetworkFisrt = [
+  '/api/auth/renew',
+  '/api/events'
+];
 
 registerRoute(
-  new RegExp('http://localhost:4000/api/events'),
+  ({ url }) => {
+    return pathsNetworkFisrt.includes(url.pathname);
+  },
   new NetworkFirst()
 );
 
